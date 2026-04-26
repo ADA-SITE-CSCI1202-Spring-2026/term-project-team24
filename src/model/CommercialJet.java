@@ -2,7 +2,7 @@ package model;
 
 public class CommercialJet extends Aircraft {
     public CommercialJet(String flightNumber) {
-        super(flightNumber, 2000, 45);
+        super(flightNumber, 8000, 60);
     }
 
     @Override

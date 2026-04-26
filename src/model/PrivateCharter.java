@@ -2,7 +2,7 @@ package model;
 
 public class PrivateCharter extends Aircraft {
     public PrivateCharter(String flightNumber) {
-        super(flightNumber, 500, 10);
+        super(flightNumber, 1500, 20);
     }
 
     @Override
