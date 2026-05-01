@@ -141,7 +141,7 @@ term-project-team24/
 ├── src/
 │   ├── App.java               ← entry point, launches the window
 │   ├── MainController.java    ← GUI (Person C)
-│   ├── DepotManager.java      ← resource management (Person B)
+│   ├── model.DepotManager.java      ← resource management (Person B)
 │   └── model.SupplyItem.java        ← supply enum (Person B)
 ├── lib/                       ← JavaFX jars (NOT on GitHub, add locally)
 ├── out/                       ← compiled .class files (auto-generated)

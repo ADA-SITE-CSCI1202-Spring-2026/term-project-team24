@@ -8,6 +8,7 @@ import model.PrivateCharter;
 import model.Aircraft;
 
 public class FlightGenerator {
+
     private final MainController controller;
     private final Random random = new Random();
     private int flightCounter = 100;
@@ -25,9 +26,6 @@ public class FlightGenerator {
         timer.play();
     }
 
-
-
-
     private void generateFlight() {
         flightCounter++;
         String number = "FL-" + flightCounter;
@@ -40,8 +38,6 @@ public class FlightGenerator {
 
         controller.addFlightToQueue(aircraft);
     }
-
-
 
     public void stop() {
         if (timer != null) timer.stop();

@@ -1,3 +1,4 @@
+import model.DepotManager;
 import model.SupplyItem;
 
 public class TestDepot {

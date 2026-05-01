@@ -5,6 +5,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
+import model.DepotManager;
 import model.SupplyItem;
 
 public class MainController {
