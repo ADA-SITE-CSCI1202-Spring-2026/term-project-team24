@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommercialJet extends Aircraft {
+    public CommercialJet(String flightNumber) {
+        super(flightNumber, 8000, 300, 15000, 60);
+    }
+    @Override
+    public String getType() {
+        return "Commercial Jet";
     private static final int MEALS_REQUIRED = 200;
     private static final int CARTS_REQUIRED = 5;
     private static final double REVENUE = 8000.0;
