@@ -1,3 +1,5 @@
+import model.SupplyItem;
+
 import java.util.HashMap;
 
 public class DepotManager {

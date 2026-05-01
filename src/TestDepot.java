@@ -1,3 +1,5 @@
+import model.SupplyItem;
+
 public class TestDepot {
 
     public static void main(String[] args) {
