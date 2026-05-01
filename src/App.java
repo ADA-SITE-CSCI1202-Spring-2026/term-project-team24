@@ -11,6 +11,10 @@ public class App extends Application {
         stage.setTitle("Skyways — Ground Operations Dashboard");
         stage.setScene(scene);
         stage.show();
+
+        //update for automatic flight generation
+        FlightGenerator generator = new FlightGenerator(controller);
+        generator.start();
     }
 
     public static void main(String[] args) {

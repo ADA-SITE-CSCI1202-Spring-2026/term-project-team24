@@ -23,6 +23,6 @@ public abstract class Aircraft {
     public int getTurnaroundTime() {
         return turnaroundTime;
     }
-    
+
     public abstract String getType();
 }
