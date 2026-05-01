@@ -18,12 +18,5 @@ public class BaggageHandler implements IGroundService {
 
         depot.consumeResources(SupplyItem.BAGGAGE_CARTS, cartsNeeded);
         return true;
-    public void serviceFlight(Aircraft aircraft) {
-        System.out.println("Handling luggage for " + aircraft.getFlightNumber());
-    }
-}
-     @Override
-    public void serviceFlight(Aircraft aircraft) {
-        System.out.println("Handling luggage for " + aircraft.getFlightNumber());
     }
 }
