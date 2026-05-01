@@ -7,6 +7,8 @@ import javafx.scene.text.FontWeight;
 import model.DepotManager;
 import model.SupplyItem;
 import javafx.scene.paint.Color;
+import model.DepotManager;
+import model.SupplyItem;
 
 public class MainController {
 
@@ -289,7 +291,7 @@ public class MainController {
         }
     }
 
-    // Maps dropdown string to SupplyItem enum
+    // Maps dropdown string to model.SupplyItem enum
     private SupplyItem mapToSupplyItem(String label) {
         switch (label) {
             case "Jet Fuel":        return SupplyItem.FUEL;
