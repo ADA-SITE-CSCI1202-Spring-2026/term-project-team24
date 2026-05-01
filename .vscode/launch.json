@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "TestDepot",
+            "request": "launch",
+            "mainClass": "TestDepot",
+            "projectName": "project1_67ad77db"
+        },
+        {
+            "type": "java",
             "name": "AircraftTest",
             "request": "launch",
             "mainClass": "AircraftTest",
