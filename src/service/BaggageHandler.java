@@ -13,3 +13,8 @@ public class BaggageHandler implements IGroundService{
         System.out.println("Handling luggage for " + aircraft.getFlightNumber());
     }
 }
+     @Override
+    public void serviceFlight(Aircraft aircraft) {
+        System.out.println("Handling luggage for " + aircraft.getFlightNumber());
+    }
+}

@@ -13,3 +13,4 @@ public class CateringVan implements IGroundService {
         System.out.println("Loading meal carts for " + aircraft.getFlightNumber());
     }
 }
+}

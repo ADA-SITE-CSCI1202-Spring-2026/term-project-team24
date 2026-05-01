@@ -4,6 +4,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import model.DepotManager;
+import model.SupplyItem;
 import javafx.scene.paint.Color;
 import model.DepotManager;
 import model.SupplyItem;
