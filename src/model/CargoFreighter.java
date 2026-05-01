@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CargoFreighter extends Aircraft {
-    public CargoFreighter(String flightNumber) {
-        super(flightNumber, 5000, 0, 10000, 45);
 
     private static final int CARTS_REQUIRED = 10;
     private static final double REVENUE = 5000.0;
@@ -13,6 +11,7 @@ public class CargoFreighter extends Aircraft {
     public CargoFreighter(String flightNumber) {
         super(flightNumber, 8000, 60);
     }
+
     @Override
     public Map<SupplyItem, Integer> getRequiredSupplies() {
         Map<SupplyItem, Integer> needs = new HashMap<>();
