@@ -20,5 +20,3 @@ public class CateringVan implements IGroundService {
         return true;
     }
 }
-}
-}
