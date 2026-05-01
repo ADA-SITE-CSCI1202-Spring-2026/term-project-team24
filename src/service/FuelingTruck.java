@@ -1,16 +1,24 @@
 package service;
 
-import model.Aircraft;
+import model.*;
 
-public class FuelingTruck implements IGroundService{
+public class FuelingTruck implements IGroundService {
+
     @Override
-    public boolean canProcess(Aircraft aircraft){
-        return aircraft.getFuelRequired()>0;
+    public boolean canProcess(Aircraft aircraft) {
+        return aircraft.getRequiredSupplies().containsKey(SupplyItem.FUEL);
     }
 
     @Override
-    public void serviceFlight(Aircraft aircraft){
-        System.out.println("Pumping " + aircraft.getFuelRequired() + " L into " + aircraft.getFlightNumber());
+    public boolean service(Aircraft aircraft, DepotManager depot) {
+
+        int fuelNeeded = aircraft.getRequiredSupplies().get(SupplyItem.FUEL);
+
+        if (!depot.hasEnough(SupplyItem.FUEL, fuelNeeded)) return false;
+
+        depot.consumeResources(SupplyItem.FUEL, fuelNeeded);
+        return true;
     }
+}
 }
 }

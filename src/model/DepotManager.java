@@ -25,34 +25,33 @@ public class DepotManager {
         return budget;
     }
 
-
-    public boolean hasEnough(int fuelNeeded, int mealsNeeded) {
-        return getSupply(SupplyItem.FUEL) >= fuelNeeded &&
-                getSupply(SupplyItem.MEALS) >= mealsNeeded;
+    public boolean hasEnough(SupplyItem item, int amount) {
+        return getSupply(item) >= amount;
     }
 
+    public boolean consumeResources(SupplyItem item, int amount) {
 
-    public void consumeResources(int fuel, int meals, int revenue) {
+        if (!hasEnough(item, amount)) {
+            return false;
+        }
 
-        supplies.put(SupplyItem.FUEL, getSupply(SupplyItem.FUEL) - fuel);
-        supplies.put(SupplyItem.MEALS, getSupply(SupplyItem.MEALS) - meals);
+        supplies.put(item, getSupply(item) - amount);
+        return true;
+    }
 
+    public void addRevenue(double revenue) {
         budget += revenue;
     }
-
 
     public boolean purchase(SupplyItem item) {
 
         int cost = 5000;
+        int restockAmount = 1000;
 
-        if (budget >= cost) {
-            supplies.put(item, getSupply(item) + 1000);
-            budget -= cost;
-            return true;
-        }
+        if (budget < cost) return false;
 
-        return false;
+        supplies.put(item, getSupply(item) + restockAmount);
+        budget -= cost;
+        return true;
     }
-
-
 }
