@@ -102,7 +102,7 @@ public class SimulationEngine {
         IGroundService.Logger logCb = message -> log(message);
         for (IGroundService service : services) {
             if (service.canProcess(aircraft)) {
-                service.service(aircraft, logCb);
+                service.serviceFlight(aircraft, logCb);
             }
         }
 
