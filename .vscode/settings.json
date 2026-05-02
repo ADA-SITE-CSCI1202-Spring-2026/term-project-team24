@@ -1,5 +1,9 @@
 {
     "java.project.referencedLibraries": [
-        "/Users/leyla/Downloads/javafx-sdk-26/lib/**/*.jar"
+        "/Users/leyla/Downloads/javafx-sdk-26/lib/**/*.jar",
+        "lib/javafx.controls.jar",
+        "lib/javafx.base.jar",
+        "lib/javafx.graphics.jar",
+        "lib/javafx.fxml.jar"
     ]
 }

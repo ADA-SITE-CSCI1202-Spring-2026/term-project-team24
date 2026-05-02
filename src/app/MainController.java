@@ -1,28 +1,43 @@
+package app;
+
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import model.DepotManager;
-import model.SupplyItem;
 import javafx.scene.paint.Color;
+import model.Aircraft;
 import model.DepotManager;
 import model.SupplyItem;
+import service.SimulationEngine;
+import service.SaveLoadManager;
 
 public class MainController {
 
-    //  UI references 
+    // UI references
     private ListView<String> flightListView;
     private Label fuelLabel;
     private Label mealsLabel;
     private Label cartsLabel;
     private Label budgetLabel;
+    private Label queueCount;
     private TextArea logArea;
-    private ComboBox<String> supplyDropdown;
+    private ComboBox<SupplyItem> supplyDropdown;
 
-    //  Backend 
-    private DepotManager depot = new DepotManager();
+    // Backend — single source of truth
+    private final DepotManager depot = new DepotManager();
+    private final SimulationEngine engine;
+
+    public MainController() {
+        engine = new SimulationEngine(depot);
+
+        // Wire engine callbacks — UI updates happen here, not inside engine
+        engine.setOnQueueUpdated(this::refreshQueueDisplay);
+        engine.setOnStateUpdated(this::refreshResourceDisplay);
+        engine.setOnLog(this::log);
+    }
 
     // BUILD THE FULL UI — called by App.java
     public VBox buildUI() {
@@ -46,8 +61,11 @@ public class MainController {
 
         root.getChildren().addAll(title, topRow, bottomRow, saveLoadRow);
 
-        // Show real depot values immediately on startup
+        // Show real depot values on startup
         refreshResourceDisplay();
+
+        // Start the simulation engine (auto-generates flights every 3s)
+        engine.start();
 
         return root;
     }
@@ -60,28 +78,15 @@ public class MainController {
         flightListView = new ListView<>();
         flightListView.setPrefHeight(200);
 
-        // Dummy flights — will be replaced by Person A's timer in Week 2
-        flightListView.getItems().addAll(
-            "FL-101 | Boeing 747      | Fuel: 8000L | Meals: 300",
-            "FL-202 | Cargo Freighter | Fuel: 5000L | Meals: 0",
-            "FL-303 | Private Charter | Fuel: 1000L | Meals: 50"
-        );
-
-        Label queueCount = new Label("Flights waiting: " + flightListView.getItems().size());
+        queueCount = new Label("Flights waiting: 0");
         queueCount.setTextFill(Color.web("#555555"));
         queueCount.setFont(Font.font("Arial", 12));
-
-        // Update count label whenever list changes
-        flightListView.getItems().addListener(
-            (javafx.collections.ListChangeListener<String>) change ->
-                queueCount.setText("Flights waiting: " + flightListView.getItems().size())
-        );
 
         Button clearBtn = new Button("Clear Next Flight");
         clearBtn.setMaxWidth(Double.MAX_VALUE);
         styleButton(clearBtn, "#1565C0");
 
-        // LAMBDA — event handling only
+        // LAMBDA — event handling only, delegates to handler method
         clearBtn.setOnAction(e -> handleClearFlight());
 
         panel.getChildren().addAll(flightListView, queueCount, clearBtn);
@@ -118,21 +123,35 @@ public class MainController {
         VBox panel = createPanel("Zone 3 — Supply Requisition");
         panel.setPrefWidth(300);
 
-        Label instructions = new Label("Select a supply and click Purchase to restock.\nCost: $5,000 per order.");
+        Label instructions = new Label("Select a supply and click Purchase to restock.");
         instructions.setWrapText(true);
         instructions.setTextFill(Color.web("#555555"));
         instructions.setFont(Font.font("Arial", 12));
 
         supplyDropdown = new ComboBox<>();
-        supplyDropdown.getItems().addAll("Jet Fuel", "In-flight Meals", "Baggage Carts");
-        supplyDropdown.setValue("Jet Fuel");
+        supplyDropdown.getItems().addAll(SupplyItem.values());
+        supplyDropdown.setValue(SupplyItem.FUEL);
         supplyDropdown.setMaxWidth(Double.MAX_VALUE);
+
+        // Show display name in the dropdown
+        supplyDropdown.setCellFactory(lv -> new ListCell<>() {
+            @Override protected void updateItem(SupplyItem item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.getDisplayName());
+            }
+        });
+        supplyDropdown.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(SupplyItem item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? "" : item.getDisplayName());
+            }
+        });
 
         Button purchaseBtn = new Button("Purchase Cargo");
         purchaseBtn.setMaxWidth(Double.MAX_VALUE);
         styleButton(purchaseBtn, "#2e7d32");
 
-        // LAMBDA — delegates to handlePurchase()
+        // LAMBDA — event handling only, delegates to handler method
         purchaseBtn.setOnAction(e -> handlePurchase(supplyDropdown.getValue()));
 
         panel.getChildren().addAll(instructions, supplyDropdown, purchaseBtn);
@@ -151,13 +170,6 @@ public class MainController {
         VBox.setVgrow(logArea, Priority.ALWAYS);
 
         panel.getChildren().add(logArea);
-
-        log("INFO: Skyways Ground Operations Dashboard started.");
-        log("INFO: Depot loaded — Fuel: " + depot.getSupply(SupplyItem.FUEL)
-            + "L | Meals: " + depot.getSupply(SupplyItem.MEALS)
-            + " | Budget: $" + String.format("%,d", depot.getBudget()));
-        log("INFO: Awaiting incoming flights...");
-
         return panel;
     }
 
@@ -166,13 +178,13 @@ public class MainController {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_RIGHT);
 
-        Button saveBtn = new Button("Save State");
-        Button loadBtn = new Button("Load State");
+        Button saveBtn = new Button("💾 Save State");
+        Button loadBtn = new Button("📂 Load State");
 
         styleButton(saveBtn, "#6a1b9a");
         styleButton(loadBtn, "#6a1b9a");
 
-        // LAMBDAS — delegate to handler methods
+        // LAMBDAS — event handling only
         saveBtn.setOnAction(e -> handleSave());
         loadBtn.setOnAction(e -> handleLoad());
 
@@ -180,128 +192,113 @@ public class MainController {
         return row;
     }
 
-    // HANDLER METHODS — business logic lives here, not in lambdas
+    // ── HANDLER METHODS — all business logic lives here, not in lambdas ──
 
     private void handleClearFlight() {
-        if (flightListView.getItems().isEmpty()) {
-            log("WARNING: No flights in the holding pattern. Standby.");
-            return;
-        }
-
-        String next = flightListView.getItems().get(0);
-
-        // Basic fuel check — Week 2 will replace this with real Aircraft object check
-        if (depot.getSupply(SupplyItem.FUEL) < 1000) {
-            log("ERROR: Cannot clear [" + next + "] — Insufficient Jet Fuel!");
-            return;
-        }
-
-        if (depot.getSupply(SupplyItem.MEALS) < 50) {
-            log("ERROR: Cannot clear [" + next + "] — Insufficient In-flight Meals!");
-            return;
-        }
-
-        // Remove from queue and consume resources
-        flightListView.getItems().remove(0);
-        depot.consumeResources(1000, 50, 8000);
-
-        log("SUCCESS: Cleared flight — " + next);
-        log("INFO: Resources consumed. Revenue +$8,000 added to budget.");
-
-        refreshResourceDisplay();
-        checkLowResources();
+        // Delegates entirely to SimulationEngine — no logic here
+        engine.processNextAircraft();
     }
 
-    private void handlePurchase(String selectedSupply) {
-        if (selectedSupply == null) {
+    private void handlePurchase(SupplyItem item) {
+        if (item == null) {
             log("ERROR: No supply selected from dropdown.");
             return;
         }
-
-        SupplyItem item = mapToSupplyItem(selectedSupply);
-
-        if (item == null) {
-            log("ERROR: Unknown supply item selected.");
-            return;
-        }
-
-        boolean success = depot.purchase(item);
-
-        if (success) {
-            log("SUCCESS: Purchased " + selectedSupply
-                + " — $5,000 deducted. +1000 units added.");
-        } else {
-            log("ERROR: Cannot purchase " + selectedSupply
-                + " — Insufficient budget! Current: $"
-                + String.format("%,d", depot.getBudget()));
-        }
-
-        refreshResourceDisplay();
+        // Delegates entirely to SimulationEngine
+        engine.purchaseSupply(item);
+        checkLowResources();
     }
 
     private void handleSave() {
-        // TODO Week 2: call SaveLoadManager.save(depot, queue)
-        log("INFO: Save requested — SaveLoadManager not yet connected.");
+        engine.stop();
+        boolean success = SaveLoadManager.save(depot);
+        if (success) {
+            log("INFO: State saved to airport_state.csv");
+        } else {
+            log("ERROR: Save failed — check file permissions.");
+        }
+        engine.start();
     }
 
     private void handleLoad() {
-        // TODO Week 2: call SaveLoadManager.load(), then refreshResourceDisplay()
-        log("INFO: Load requested — SaveLoadManager not yet connected.");
-        refreshResourceDisplay();
+        engine.stop();
+        boolean success = SaveLoadManager.load(depot);
+        if (success) {
+            refreshQueueDisplay();
+            refreshResourceDisplay();
+            log("INFO: State loaded from airport_state.csv — simulation resumed.");
+        } else {
+            log("ERROR: Load failed — file may not exist yet. Save first.");
+        }
+        engine.start();
     }
 
-    // PUBLIC METHOD — Person A calls this when timer generates a new flight
-    public void addFlightToQueue(String flightDescription) {
-        flightListView.getItems().add(flightDescription);
-        log("WARNING: New Arrival — " + flightDescription);
-    }
+    // ── DISPLAY REFRESH METHODS ──
 
-    // HELPER METHODS
+    public void refreshQueueDisplay() {
+        Platform.runLater(() -> {
+            flightListView.getItems().clear();
+            for (Aircraft a : engine.getQueueSnapshot()) {
+                flightListView.getItems().add(formatAircraft(a));
+            }
+            queueCount.setText("Flights waiting: " + flightListView.getItems().size());
+        });
+    }
 
     public void refreshResourceDisplay() {
-        int fuel   = depot.getSupply(SupplyItem.FUEL);
-        int meals  = depot.getSupply(SupplyItem.MEALS);
-        int carts  = depot.getSupply(SupplyItem.BAGGAGE_CARTS);
-        int budget = depot.getBudget();
+        Platform.runLater(() -> {
+            int fuel  = depot.getSupplyAmount(SupplyItem.FUEL);
+            int meals = depot.getSupplyAmount(SupplyItem.MEALS);
+            int carts = depot.getSupplyAmount(SupplyItem.BAGGAGE_CARTS);
+            double budget = depot.getBudget();
 
-        fuelLabel.setText ("Jet Fuel:        " + fuel  + " L");
-        mealsLabel.setText("In-flight Meals: " + meals);
-        cartsLabel.setText("Baggage Carts:   " + carts);
-        budgetLabel.setText("Budget:          $" + String.format("%,d", budget));
+            fuelLabel.setText ("Jet Fuel:        " + fuel  + " L");
+            mealsLabel.setText("In-flight Meals: " + meals + " units");
+            cartsLabel.setText("Baggage Carts:   " + carts + " units");
+            budgetLabel.setText("Budget:          $" + String.format("%,.0f", budget));
 
-        // Turn label red if critically low
-        fuelLabel.setTextFill(fuel < 2000   ? Color.web("#c62828") : Color.web("#1a1a2e"));
-        mealsLabel.setTextFill(meals < 100  ? Color.web("#c62828") : Color.web("#1a1a2e"));
+            fuelLabel.setTextFill(fuel < 2000  ? Color.web("#c62828") : Color.web("#1a1a2e"));
+            mealsLabel.setTextFill(meals < 100 ? Color.web("#c62828") : Color.web("#1a1a2e"));
+            cartsLabel.setTextFill(carts < 5   ? Color.web("#c62828") : Color.web("#1a1a2e"));
+            budgetLabel.setTextFill(budget < 5000 ? Color.web("#c62828") : Color.web("#2e7d32"));
+        });
     }
 
     public void log(String message) {
-        java.time.LocalTime now = java.time.LocalTime.now();
-        String timestamp = String.format("[%02d:%02d:%02d] ",
-            now.getHour(), now.getMinute(), now.getSecond());
-        logArea.appendText(timestamp + message + "\n");
-        logArea.setScrollTop(Double.MAX_VALUE);
+        Platform.runLater(() -> {
+            java.time.LocalTime now = java.time.LocalTime.now();
+            String timestamp = String.format("[%02d:%02d:%02d] ",
+                now.getHour(), now.getMinute(), now.getSecond());
+            logArea.appendText(timestamp + message + "\n");
+            logArea.setScrollTop(Double.MAX_VALUE);
+        });
+    }
+
+    // ── HELPER METHODS ──
+
+    private String formatAircraft(Aircraft a) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(a.toString()); // e.g. "[CommercialJet] FL-101"
+        a.getRequiredSupplies().forEach((item, qty) ->
+            sb.append(" | ").append(item.getDisplayName()).append(": ").append(qty).append(item.getUnit())
+        );
+        return sb.toString();
     }
 
     private void checkLowResources() {
-        if (depot.getSupply(SupplyItem.FUEL) < 2000) {
+        if (depot.getSupplyAmount(SupplyItem.FUEL) < 2000) {
             log("WARNING: Jet Fuel critically low! Consider restocking.");
         }
-        if (depot.getSupply(SupplyItem.MEALS) < 100) {
+        if (depot.getSupplyAmount(SupplyItem.MEALS) < 100) {
             log("WARNING: In-flight Meals critically low! Consider restocking.");
         }
-    }
-
-    // Maps dropdown string to model.SupplyItem enum
-    private SupplyItem mapToSupplyItem(String label) {
-        switch (label) {
-            case "Jet Fuel":        return SupplyItem.FUEL;
-            case "In-flight Meals": return SupplyItem.MEALS;
-            case "Baggage Carts":   return SupplyItem.BAGGAGE_CARTS;
-            default:                return null;
+        if (depot.getSupplyAmount(SupplyItem.BAGGAGE_CARTS) < 5) {
+            log("WARNING: Baggage Carts critically low! Consider restocking.");
         }
     }
 
-    // STYLING HELPERS
+    // ── STYLING HELPERS ──
+
     private VBox createPanel(String title) {
         VBox panel = new VBox(10);
         panel.setPadding(new Insets(12));
@@ -311,13 +308,10 @@ public class MainController {
             "-fx-border-radius: 8;" +
             "-fx-background-radius: 8;"
         );
-
         Label header = new Label(title);
         header.setFont(Font.font("Arial", FontWeight.BOLD, 13));
         header.setTextFill(Color.web("#1a1a2e"));
-
-        Separator sep = new Separator();
-        panel.getChildren().addAll(header, sep);
+        panel.getChildren().addAll(header, new Separator());
         return panel;
     }
 

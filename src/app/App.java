@@ -1,3 +1,5 @@
+package app;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -11,10 +13,8 @@ public class App extends Application {
         stage.setTitle("Skyways — Ground Operations Dashboard");
         stage.setScene(scene);
         stage.show();
-
-        //update for automatic flight generation
-        FlightGenerator generator = new FlightGenerator(controller);
-        generator.start();
+        // SimulationEngine starts automatically inside controller.buildUI()
+        // FlightGenerator removed — engine handles flight generation internally
     }
 
     public static void main(String[] args) {

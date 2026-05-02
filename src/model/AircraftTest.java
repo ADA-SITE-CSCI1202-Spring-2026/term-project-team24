@@ -1,4 +1,4 @@
-import model.*;
+package model;
 
 public class AircraftTest {
     public static void main(String[] args) {
