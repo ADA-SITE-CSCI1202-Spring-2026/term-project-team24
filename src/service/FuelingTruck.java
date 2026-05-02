@@ -10,7 +10,7 @@ public class FuelingTruck implements IGroundService {
     }
 
     @Override
-    public void service(Aircraft aircraft, Logger logger) {
+    public void serviceFlight(Aircraft aircraft, Logger logger) {
         int fuel = aircraft.getRequiredSupplies().getOrDefault(SupplyItem.FUEL, 0);
         logger.log("Fueling Truck dispensed " + fuel + "L to " + aircraft.getFlightNumber());
     }
