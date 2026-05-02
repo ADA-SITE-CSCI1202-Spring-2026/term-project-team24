@@ -15,5 +15,3 @@ public class CateringVan implements IGroundService {
         logger.log("Catering Van loaded " + meals + " meals onto " + aircraft.getFlightNumber());
     }
 }
-}
-}

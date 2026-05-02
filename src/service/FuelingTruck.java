@@ -15,5 +15,3 @@ public class FuelingTruck implements IGroundService {
         logger.log("Fueling Truck dispensed " + fuel + "L to " + aircraft.getFlightNumber());
     }
 }
-}
-}

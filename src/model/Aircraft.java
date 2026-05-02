@@ -32,5 +32,4 @@ public abstract class Aircraft {
     public String toString() {
         return "[" + getType() + "] " + flightNumber;
     }
-    public abstract String getType();
 }
