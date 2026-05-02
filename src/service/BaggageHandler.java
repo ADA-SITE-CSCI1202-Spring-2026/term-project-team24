@@ -10,7 +10,7 @@ public class BaggageHandler implements IGroundService {
     }
 
     @Override
-    public void service(Aircraft aircraft, Logger logger) {
+    public void serviceFlight(Aircraft aircraft, Logger logger) {
         int carts = aircraft.getRequiredSupplies().getOrDefault(SupplyItem.BAGGAGE_CARTS, 0);
         logger.log("Baggage Handler deployed " + carts + " carts for " + aircraft.getFlightNumber());
     }
