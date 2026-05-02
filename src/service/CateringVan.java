@@ -10,14 +10,9 @@ public class CateringVan implements IGroundService {
     }
 
     @Override
-    public boolean service(Aircraft aircraft, DepotManager depot) {
-
-        int mealsNeeded = aircraft.getRequiredSupplies().get(SupplyItem.MEALS);
-
-        if (!depot.hasEnough(SupplyItem.MEALS, mealsNeeded)) return false;
-
-        depot.consumeResources(SupplyItem.MEALS, mealsNeeded);
-        return true;
+    public void service(Aircraft aircraft, Logger logger) {
+        int meals = aircraft.getRequiredSupplies().getOrDefault(SupplyItem.MEALS, 0);
+        logger.log("Catering Van loaded " + meals + " meals onto " + aircraft.getFlightNumber());
     }
 }
 }

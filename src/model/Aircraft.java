@@ -5,12 +5,12 @@ import java.util.Map;
 public abstract class Aircraft {
 
     private String flightNumber;
-    private int    fuelRequired;
-    private int    turnaroundTime;
+    private int fuelRequired;
+    private int turnaroundTime;
 
     public Aircraft(String flightNumber, int fuelRequired, int turnaroundTime) {
-        this.flightNumber   = flightNumber;
-        this.fuelRequired   = fuelRequired;
+        this.flightNumber = flightNumber;
+        this.fuelRequired = fuelRequired;
         this.turnaroundTime = turnaroundTime;
     }
 
@@ -21,10 +21,10 @@ public abstract class Aircraft {
     public String getFlightNumber() {
         return flightNumber;
     }
-    public int    getFuelRequired() {
+    public int getFuelRequired() {
         return fuelRequired;
     }
-    public int    getTurnaroundTime() {
+    public int getTurnaroundTime() {
         return turnaroundTime;
     }
 

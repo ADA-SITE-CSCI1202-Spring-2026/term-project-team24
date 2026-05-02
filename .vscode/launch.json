@@ -3,24 +3,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "TestDepot",
-            "request": "launch",
-            "mainClass": "TestDepot",
-            "projectName": "project1_67ad77db"
-        },
-        {
-            "type": "java",
-            "name": "AircraftTest",
-            "request": "launch",
-            "mainClass": "AircraftTest",
-            "projectName": "project1_67ad77db"
-        },
-        {
-            "type": "java",
             "name": "Launch App",
             "request": "launch",
             "mainClass": "App",
-            "vmArgs": "--module-path lib --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path /Users/leyla/Downloads/javafx-sdk-26/lib --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }

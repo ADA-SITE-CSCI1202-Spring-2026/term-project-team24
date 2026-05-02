@@ -1,7 +1,27 @@
 package model;
 
 public enum SupplyItem {
-    FUEL,
-    MEALS,
-    BAGGAGE_CARTS
+    FUEL("Jet Fuel", "L"),
+    MEALS("In-flight Meals", "units"),
+    BAGGAGE_CARTS("Baggage Carts", "units");
+
+    private final String displayName;
+    private final String unit;
+
+    SupplyItem(String displayName, String unit) {
+        this.displayName = displayName;
+        this.unit = unit;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+    public String getUnit() {
+        return unit;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }

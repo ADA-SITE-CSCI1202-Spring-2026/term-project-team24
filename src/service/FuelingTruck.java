@@ -10,14 +10,9 @@ public class FuelingTruck implements IGroundService {
     }
 
     @Override
-    public boolean service(Aircraft aircraft, DepotManager depot) {
-
-        int fuelNeeded = aircraft.getRequiredSupplies().get(SupplyItem.FUEL);
-
-        if (!depot.hasEnough(SupplyItem.FUEL, fuelNeeded)) return false;
-
-        depot.consumeResources(SupplyItem.FUEL, fuelNeeded);
-        return true;
+    public void service(Aircraft aircraft, Logger logger) {
+        int fuel = aircraft.getRequiredSupplies().getOrDefault(SupplyItem.FUEL, 0);
+        logger.log("Fueling Truck dispensed " + fuel + "L to " + aircraft.getFlightNumber());
     }
 }
 }
