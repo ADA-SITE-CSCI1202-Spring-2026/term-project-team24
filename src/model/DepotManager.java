@@ -5,7 +5,7 @@ import java.util.*;
 public class DepotManager {
 
     private final HashMap<SupplyItem, Integer> supplies;
-    private final Queue<Aircraft> flightQueue;
+    private final ArrayDeque<Aircraft> flightQueue;
     private double budget;
 
     private static final Map<SupplyItem, Integer> RESTOCK_AMOUNT = new EnumMap<>(SupplyItem.class);
@@ -34,12 +34,15 @@ public class DepotManager {
     public void enqueue(Aircraft aircraft) {
         flightQueue.add(aircraft);
     }
+    
     public Aircraft pollQueue() {
         return flightQueue.poll();
     }
+    
     public void requeueFront(Aircraft aircraft) {
-        ((ArrayDeque<Aircraft>) flightQueue).addFirst(aircraft);
+        flightQueue.addFirst(aircraft);
     }
+    
     public List<Aircraft> getQueueSnapshot() {
         return new ArrayList<>(flightQueue);
     }
