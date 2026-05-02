@@ -4,5 +4,10 @@ import model.*;
 
 public interface IGroundService {
     boolean canProcess(Aircraft aircraft);
-    boolean service(Aircraft aircraft, DepotManager depot);
+    void service(Aircraft aircraft, Logger logger);
+
+    @FunctionalInterface
+    interface Logger {
+        void log(String message);
+    }
 }

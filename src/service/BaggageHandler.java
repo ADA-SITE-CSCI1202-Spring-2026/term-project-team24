@@ -10,13 +10,8 @@ public class BaggageHandler implements IGroundService {
     }
 
     @Override
-    public boolean service(Aircraft aircraft, DepotManager depot) {
-
-        int cartsNeeded = aircraft.getRequiredSupplies().get(SupplyItem.BAGGAGE_CARTS);
-
-        if (!depot.hasEnough(SupplyItem.BAGGAGE_CARTS, cartsNeeded)) return false;
-
-        depot.consumeResources(SupplyItem.BAGGAGE_CARTS, cartsNeeded);
-        return true;
+    public void service(Aircraft aircraft, Logger logger) {
+        int carts = aircraft.getRequiredSupplies().getOrDefault(SupplyItem.BAGGAGE_CARTS, 0);
+        logger.log("Baggage Handler deployed " + carts + " carts for " + aircraft.getFlightNumber());
     }
 }

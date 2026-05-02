@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class PrivateCharter extends Aircraft {
 
-    private static final int    MEALS_REQUIRED = 20;
-    private static final double REVENUE        = 2500.0;
+    private static final int MEALS_REQUIRED = 20;
+    private static final double REVENUE = 2500.0;
 
     public PrivateCharter(String flightNumber) {
         super(flightNumber, 1500, 20);
@@ -20,6 +20,10 @@ public class PrivateCharter extends Aircraft {
         return needs;
     }
 
-    @Override public double getRevenue() { return REVENUE; }
-    @Override public String getType()    { return "PrivateCharter"; }
+    @Override public double getRevenue() {
+        return REVENUE;
+    }
+    @Override public String getType() {
+        return "PrivateCharter";
+    }
 }
