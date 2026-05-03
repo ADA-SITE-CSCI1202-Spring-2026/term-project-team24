@@ -253,8 +253,8 @@ public class MainController {
             double budget = depot.getBudget();
 
             fuelLabel.setText ("Jet Fuel:        " + fuel  + " L");
-            mealsLabel.setText("In-flight Meals: " + meals + "meals");
-            cartsLabel.setText("Baggage Carts:   " + carts + "carts");
+            mealsLabel.setText("In-flight Meals: " + meals + " meals");
+            cartsLabel.setText("Baggage Carts:   " + carts + " carts");
             budgetLabel.setText("Budget:          $" + String.format("%,.0f", budget));
 
             fuelLabel.setTextFill(fuel < 2000  ? Color.web("#c62828") : Color.web("#1a1a2e"));

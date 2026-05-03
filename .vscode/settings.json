@@ -1,6 +1,7 @@
 {
-    "java.project.referencedLibraries": [
-         "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx-swt.jar",
+    "java.project.referencedLibraries": {
+        "include": [
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx-swt.jar",
             "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.base.jar",
             "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.controls.jar",
             "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.fxml.jar",
