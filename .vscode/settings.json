@@ -1,9 +1,12 @@
 {
     "java.project.referencedLibraries": [
-        "/Users/leyla/Downloads/javafx-sdk-26/lib/**/*.jar",
-        "lib/javafx.controls.jar",
-        "lib/javafx.base.jar",
-        "lib/javafx.graphics.jar",
-        "lib/javafx.fxml.jar"
+         "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx-swt.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.base.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.controls.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.fxml.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.graphics.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.media.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.swing.jar",
+            "/Users/leyla/Downloads/javafx-sdk-17.0.19/lib/javafx.web.jar"
     ]
 }

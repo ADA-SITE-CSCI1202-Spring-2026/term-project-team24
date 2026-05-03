@@ -6,7 +6,7 @@
             "name": "Launch App",
             "request": "launch",
             "mainClass": "App",
-            "vmArgs": "--module-path /Users/leyla/Downloads/javafx-sdk-26/lib --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path /Users/leyla/Downloads/javafx-sdk-17.0.19/lib --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }

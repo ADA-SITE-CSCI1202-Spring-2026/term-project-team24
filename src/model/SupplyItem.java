@@ -2,8 +2,8 @@ package model;
 
 public enum SupplyItem {
     FUEL("Jet Fuel", "L"),
-    MEALS("In-flight Meals", "units"),
-    BAGGAGE_CARTS("Baggage Carts", "units");
+    MEALS("In-flight Meals", "meals"),
+    BAGGAGE_CARTS("Baggage Carts", "carts");
 
     private final String displayName;
     private final String unit;
