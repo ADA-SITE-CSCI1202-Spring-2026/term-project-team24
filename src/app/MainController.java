@@ -16,7 +16,6 @@ import service.SaveLoadManager;
 
 public class MainController {
 
-    // UI references
     private ListView<String> flightListView;
     private Label fuelLabel;
     private Label mealsLabel;
@@ -26,20 +25,17 @@ public class MainController {
     private TextArea logArea;
     private ComboBox<SupplyItem> supplyDropdown;
 
-    // Backend — single source of truth
     private final DepotManager depot = new DepotManager();
     private final SimulationEngine engine;
 
     public MainController() {
         engine = new SimulationEngine(depot);
 
-        // Wire engine callbacks — UI updates happen here, not inside engine
         engine.setOnQueueUpdated(this::refreshQueueDisplay);
         engine.setOnStateUpdated(this::refreshResourceDisplay);
         engine.setOnLog(this::log);
     }
 
-    // BUILD THE FULL UI — called by App.java
     public VBox buildUI() {
         VBox root = new VBox(12);
         root.setPadding(new Insets(16));
@@ -61,16 +57,13 @@ public class MainController {
 
         root.getChildren().addAll(title, topRow, bottomRow, saveLoadRow);
 
-        // Show real depot values on startup
         refreshResourceDisplay();
 
-        // Start the simulation engine (auto-generates flights every 3s)
         engine.start();
 
         return root;
     }
 
-    // ZONE 1 — The Holding Pattern (Queue)
     private VBox buildQueuePanel() {
         VBox panel = createPanel("Zone 1 — The Holding Pattern");
         panel.setPrefWidth(420);
@@ -86,14 +79,12 @@ public class MainController {
         clearBtn.setMaxWidth(Double.MAX_VALUE);
         styleButton(clearBtn, "#1565C0");
 
-        // LAMBDA — event handling only, delegates to handler method
         clearBtn.setOnAction(e -> handleClearFlight());
 
         panel.getChildren().addAll(flightListView, queueCount, clearBtn);
         return panel;
     }
 
-    // ZONE 2 — Terminal Depot (Resource State)
     private VBox buildResourcePanel() {
         VBox panel = createPanel("Zone 2 — Terminal Depot");
         panel.setPrefWidth(360);
@@ -118,7 +109,6 @@ public class MainController {
         return panel;
     }
 
-    // ZONE 3 — Supply Requisition (Supply Chain)
     private VBox buildSupplyPanel() {
         VBox panel = createPanel("Zone 3 — Supply Requisition");
         panel.setPrefWidth(300);
@@ -133,7 +123,6 @@ public class MainController {
         supplyDropdown.setValue(SupplyItem.FUEL);
         supplyDropdown.setMaxWidth(Double.MAX_VALUE);
 
-        // Show display name in the dropdown
         supplyDropdown.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(SupplyItem item, boolean empty) {
                 super.updateItem(item, empty);
@@ -151,14 +140,12 @@ public class MainController {
         purchaseBtn.setMaxWidth(Double.MAX_VALUE);
         styleButton(purchaseBtn, "#2e7d32");
 
-        // LAMBDA — event handling only, delegates to handler method
         purchaseBtn.setOnAction(e -> handlePurchase(supplyDropdown.getValue()));
 
         panel.getChildren().addAll(instructions, supplyDropdown, purchaseBtn);
         return panel;
     }
 
-    // ZONE 4 — Dispatch Radio (System Log)
     private VBox buildLogPanel() {
         VBox panel = createPanel("Zone 4 — Dispatch Radio");
 
@@ -173,7 +160,6 @@ public class MainController {
         return panel;
     }
 
-    // SAVE / LOAD ROW
     private HBox buildSaveLoadRow() {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_RIGHT);
@@ -184,7 +170,6 @@ public class MainController {
         styleButton(saveBtn, "#6a1b9a");
         styleButton(loadBtn, "#6a1b9a");
 
-        // LAMBDAS — event handling only
         saveBtn.setOnAction(e -> handleSave());
         loadBtn.setOnAction(e -> handleLoad());
 
@@ -192,10 +177,7 @@ public class MainController {
         return row;
     }
 
-    // ── HANDLER METHODS — all business logic lives here, not in lambdas ──
-
     private void handleClearFlight() {
-        // Delegates entirely to SimulationEngine — no logic here
         engine.processNextAircraft();
     }
 
@@ -204,7 +186,6 @@ public class MainController {
             log("ERROR: No supply selected from dropdown.");
             return;
         }
-        // Delegates entirely to SimulationEngine
         engine.purchaseSupply(item);
         checkLowResources();
     }
@@ -232,8 +213,6 @@ public class MainController {
         }
         engine.start();
     }
-
-    // ── DISPLAY REFRESH METHODS ──
 
     public void refreshQueueDisplay() {
         Platform.runLater(() -> {
@@ -274,11 +253,9 @@ public class MainController {
         });
     }
 
-    // ── HELPER METHODS ──
-
     private String formatAircraft(Aircraft a) {
         StringBuilder sb = new StringBuilder();
-        sb.append(a.toString()); // e.g. "[CommercialJet] FL-101"
+        sb.append(a.toString());
         a.getRequiredSupplies().forEach((item, qty) ->
             sb.append(" | ").append(item.getDisplayName()).append(": ").append(qty).append(item.getUnit())
         );
@@ -296,8 +273,6 @@ public class MainController {
             log("WARNING: Baggage Carts critically low! Consider restocking.");
         }
     }
-
-    // ── STYLING HELPERS ──
 
     private VBox createPanel(String title) {
         VBox panel = new VBox(10);
